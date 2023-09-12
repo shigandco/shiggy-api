@@ -9,8 +9,6 @@ const shiggyWithoutExtension = /^\d+\/?$/;
 const handler: PathHandler = (path, req) => {
   const allShiggies = readdirSync(SHIGGY_DIR);
 
-  console.log(path);
-
   switch (path) {
     case "whatthefuck": {
       return Bun.file("whythefuckwouldyoudownloadthis.zip");

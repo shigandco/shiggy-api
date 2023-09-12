@@ -1,6 +1,7 @@
 {
   "scripts": {
     "start": "bun run src/index.ts",
+    "inspect": "bun --inspect src/index.ts",
     "lint": "eslint ."
   },
   "dependencies": {

@@ -7,38 +7,40 @@ import getShiggies from "./shiggyGetter";
 
 if (!existsSync(SHIGGY_DIR)) getShiggies();
 
-Bun.serve({
-  async fetch(req) {
-    const url = new URL(req.url);
+export async function fetchHandler(req: Request) {
+  const url = new URL(req.url);
 
-    const api = url.pathname.match(/^\/api\/v(\d)\/(.*)$/);
-    if (api) {
-      try {
-        const apiHandler: PathHandler = await import(
-          `./v${api[1]}/index.ts`
-        ).then((m) => m.default);
+  const api = url.pathname.match(/^\/api\/v(\d)\/(.*)$/);
+  if (api) {
+    try {
+      const apiHandler: PathHandler = await import(
+        `./v${api[1]}/index.ts`
+      ).then((m) => m.default);
 
-        if (apiHandler) {
-          let path = api[2];
-          if (path.endsWith("/")) path = path.slice(0, -1);
-          const success = await apiHandler(path, req);
-          if (success) {
-            if ((success as BunFile).exists) {
-              return new Response(success as BunFile);
-            } else {
-              return success as Response;
-            }
+      if (apiHandler) {
+        let path = api[2];
+        if (path.endsWith("/")) path = path.slice(0, -1);
+        const success = await apiHandler(path, req);
+        if (success) {
+          if ((success as BunFile).exists) {
+            return new Response(success as BunFile);
+          } else {
+            return success as Response;
           }
         }
-      } catch (e) {
-        () => {};
       }
+    } catch (e) {
+      () => {};
     }
+  }
 
-    if (url.pathname === "/")
-      return new Response(Bun.file(join(PUBLIC_DIR, "index.html")));
+  if (url.pathname === "/")
+    return new Response(Bun.file(join(PUBLIC_DIR, "index.html")));
 
-    return new Response(`you literally shouldnt be able to be here`);
-  },
+  return new Response(`you literally shouldnt be able to be here`);
+}
+
+Bun.serve({
+  fetch: fetchHandler,
   port: Bun.env.PORT || 19091,
 });
