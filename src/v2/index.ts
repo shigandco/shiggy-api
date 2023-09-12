@@ -11,7 +11,7 @@ const handler: PathHandler = (path, req) => {
 
   switch (path) {
     case "whatthefuck": {
-      return Bun.file("whythefuckwouldyoudownloadthis.zip");
+      return Bun.file(join(PUBLIC_DIR, "whythefuckwouldyoudownloadthis.zip"));
     }
     case "random": {
       const shiggyNumber =

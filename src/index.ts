@@ -5,7 +5,10 @@ import { BunFile } from "bun";
 import { existsSync } from "fs";
 import getShiggies from "./shiggyGetter";
 
-if (!existsSync(SHIGGY_DIR)) getShiggies();
+if (!existsSync(SHIGGY_DIR))
+  getShiggies(
+    Bun.env.SHIGGY_LIMIT ? Number.parseInt(Bun.env.SHIGGY_LIMIT) : Infinity,
+  );
 
 export async function fetchHandler(req: Request) {
   const url = new URL(req.url);

@@ -6,9 +6,11 @@
     "run_test": "bun test --preload ./tests/preload.ts"
   },
   "dependencies": {
+    "adm-zip": "^0.5.10",
     "booru": "^2.6.4"
   },
   "devDependencies": {
+    "@types/adm-zip": "^0.5.1",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
     "bun-types": "^1.0.1",

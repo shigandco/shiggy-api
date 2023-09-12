@@ -1,32 +1,36 @@
 import { mkdirSync, rmSync } from "fs";
-import { SHIGGY_DIR } from "./constants";
+import { PUBLIC_DIR, SHIGGY_DIR } from "./constants";
+import AdmZip from "adm-zip";
 
 import booru from "booru";
 import { join } from "path";
 
 const danbooru = booru("danbooru.donmai.us");
 
-async function search(page: number) {
+async function search(page: number, limit: number) {
   return await danbooru.search("kemomimi-chan_(naga_u)", {
-    limit: 1000,
+    limit,
     page,
   });
 }
 
-export default async function getShiggies(limit?: number) {
+export default async function getShiggies(limit: number = Infinity) {
   console.log("Shiggy dir not found, fetching shiggies...");
   mkdirSync(SHIGGY_DIR, { recursive: true });
 
-  const posts = await search(1);
+  const posts = await search(1, limit);
 
-  let pageNumber = 1;
+  limit -= posts.length;
+
+  let pageNumber = 2;
   // eslint-disable-next-line no-constant-condition
-  while (posts.length < (limit || Infinity)) {
+  while (posts.length < limit) {
     console.log(`Getting page ${pageNumber}`);
-    const page = await search(pageNumber);
+    const page = await search(pageNumber, limit);
     if (page.length === 0) break;
     posts.push(...page);
     pageNumber++;
+    limit -= page.length;
   }
 
   let success = 0;
@@ -62,4 +66,12 @@ export default async function getShiggies(limit?: number) {
 
   console.log(`Successfully wrote ${success} shiggies to disk`);
   if (failure) console.log(`Failed to write ${failure} shiggies to disk`);
+
+  console.log("Generating whythefuckwouldyoudownloadthis.zip");
+
+  const zip = new AdmZip();
+
+  zip.addLocalFolder(SHIGGY_DIR);
+  zip.writeZip(join(PUBLIC_DIR, "whythefuckwouldyoudownloadthis.zip"));
+  console.log("Done!");
 }
