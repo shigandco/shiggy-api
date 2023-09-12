@@ -6,13 +6,28 @@ import { join } from "path";
 
 const danbooru = booru("danbooru.donmai.us");
 
-export default async function getShiggies(limit: number = 1000) {
+async function search(page: number) {
+  return await danbooru.search("kemomimi-chan_(naga_u)", {
+    limit: 1000,
+    page,
+  });
+}
+
+export default async function getShiggies(limit?: number) {
   console.log("Shiggy dir not found, fetching shiggies...");
   mkdirSync(SHIGGY_DIR, { recursive: true });
 
-  const posts = await danbooru.search("kemomimi-chan_(naga_u)", {
-    limit,
-  });
+  const posts = await search(1);
+
+  let pageNumber = 1;
+  // eslint-disable-next-line no-constant-condition
+  while (posts.length < (limit || Infinity)) {
+    console.log(`Getting page ${pageNumber}`);
+    const page = await search(pageNumber);
+    if (page.length === 0) break;
+    posts.push(...page);
+    pageNumber++;
+  }
 
   let success = 0;
   let failure = 0;
