@@ -2,7 +2,8 @@
   "scripts": {
     "start": "bun run src/index.ts",
     "inspect": "bun --inspect src/index.ts",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "run_test": "bun test --preload ./tests/preload.ts"
   },
   "dependencies": {
     "booru": "^2.6.4"

@@ -6,12 +6,12 @@ import { join } from "path";
 
 const danbooru = booru("danbooru.donmai.us");
 
-export default async function getShiggies() {
+export default async function getShiggies(limit: number = 1000) {
   console.log("Shiggy dir not found, fetching shiggies...");
   mkdirSync(SHIGGY_DIR, { recursive: true });
 
   const posts = await danbooru.search("kemomimi-chan_(naga_u)", {
-    limit: 1000,
+    limit,
   });
 
   let success = 0;
