@@ -2,7 +2,7 @@ import { join } from "path";
 import { existsSync } from "fs";
 import { Router } from "bunrest/src/router/router";
 
-import { SHIGGY_DIR, PUBLIC_DIR, ZIP_NAME } from "../../constants";
+import { SHIGGY_DIR, PUBLIC_DIR, ZIP_NAME } from "../../../constants";
 
 if (!existsSync(SHIGGY_DIR) || !existsSync(join(PUBLIC_DIR, "sizes.json")))
   throw new Error("Shiggies not found");

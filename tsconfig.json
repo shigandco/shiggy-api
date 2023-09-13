@@ -21,6 +21,9 @@
     // best practices
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+
+    "suppressImplicitAnyIndexErrors": true,
+    "ignoreDeprecations": "5.0"
   }
 }
