@@ -94,7 +94,7 @@ export default async function getShiggies(limit = 50): Promise<void> {
   Bun.write(join(PUBLIC_DIR, "sizes.json"), JSON.stringify(sizes, null));
 
   Bun.write(
-    join(PUBLIC_DIR, "shiggies.json"),
+    join(SHIGGY_DIR, "shiggies.json"),
     JSON.stringify(Object.keys(posts), null),
   );
   console.info(
