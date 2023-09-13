@@ -1,77 +1,111 @@
-import { mkdirSync, rmSync } from "fs";
-import { PUBLIC_DIR, SHIGGY_DIR } from "./constants";
-import AdmZip from "adm-zip";
-
-import booru from "booru";
+import { mkdir } from "fs";
 import { join } from "path";
+import AdmZip from "adm-zip";
+import booru, { Post } from "booru";
+
+import { PUBLIC_DIR, SHIGGY_DIR, ZIP_NAME } from "./constants";
+
+const blacklist = new Set(
+  (await Bun.file(join(PUBLIC_DIR, "blacklist.txt")).text()).split("\n"),
+);
+
+const deniedTags = new Set(["nsfw"]); // idk, work on this
+
+function isSafe(post: Post): boolean {
+  if (blacklist.has(post.id)) return false;
+  switch (post.rating) {
+    case "s":
+      return true;
+    case "q":
+    case "e":
+      return false;
+  }
+
+  if (post.tags.some((t) => deniedTags.has(t))) return false;
+  return true;
+}
+
+function selectAttributesFromPost(post: Post): Partial<Post> {
+  return {
+    id: post.id,
+    fileUrl: post.fileUrl,
+    tags: post.tags,
+    score: post.score,
+    rating: post.rating,
+    createdAt: post.createdAt,
+    height: post.height,
+    width: post.width,
+  };
+}
 
 const danbooru = booru("danbooru.donmai.us");
 
-async function search(page: number, limit: number) {
-  return await danbooru.search("kemomimi-chan_(naga_u)", {
-    limit,
-    page,
+export default async function getShiggies(limit = 50): Promise<void> {
+  console.info("Setting up shiggies..");
+  const posts = {} as Record<
+      string,
+      ReturnType<typeof selectAttributesFromPost>
+    >,
+    didFetch = new Set<string>(),
+    chunk_limit = Math.min(Math.ceil(limit / 10), 50);
+
+  let page = await danbooru.search("kemomimi-chan_(naga_u)", {
+    limit: chunk_limit,
   });
-}
 
-export default async function getShiggies(limit: number = Infinity) {
-  console.log("Shiggy dir not found, fetching shiggies...");
-  mkdirSync(SHIGGY_DIR, { recursive: true });
+  while (page.length && Object.keys(posts).length + chunk_limit <= limit) {
+    console.info(`Processing page ${page.page}...`);
 
-  const posts = await search(1, limit);
+    await Promise.all(
+      page.map(async (post) => {
+        if (!post.available || !post.fileUrl || !isSafe(post)) return;
 
-  limit -= posts.length;
+        posts[post.id] = selectAttributesFromPost(post);
 
-  let pageNumber = 2;
-  // eslint-disable-next-line no-constant-condition
-  while (posts.length < limit) {
-    console.log(`Getting page ${pageNumber}`);
-    const page = await search(pageNumber, limit);
-    if (page.length === 0) break;
-    posts.push(...page);
-    pageNumber++;
-    limit -= page.length;
+        const path = join(SHIGGY_DIR, post.id);
+        const [image] = await Promise.all([
+          fetch(post.fileUrl!).then((r) => r.arrayBuffer()),
+          mkdir(path, { recursive: true }, (e) => {
+            if (e) throw new Error("Failed to create directory");
+          }),
+        ]);
+
+        await Promise.all([
+          Bun.write(join(path, "image.png"), image),
+          Bun.write(join(path, "data.json"), JSON.stringify(posts[post.id])),
+        ]);
+
+        didFetch.add(post.id);
+      }),
+    );
+
+    page = await page.nextPage();
   }
 
-  let success = 0;
-  let failure = 0;
+  const sizes = Object.fromEntries(
+    Object.entries(posts).map(([id, post]) => [
+      id,
+      {
+        width: post.width,
+        height: post.height,
+      },
+    ]),
+  );
+  Bun.write(join(PUBLIC_DIR, "sizes.json"), JSON.stringify(sizes, null));
 
-  for (const post of posts) {
-    if (!post.file_url) return;
-    mkdirSync(join(SHIGGY_DIR, post.id), { recursive: true });
+  Bun.write(
+    join(PUBLIC_DIR, "shiggies.json"),
+    JSON.stringify(Object.keys(posts), null),
+  );
+  console.info(
+    `Fetched ${didFetch.size} posts out of ${Object.keys(posts).length} total`,
+  );
 
-    try {
-      const image = await fetch(post.file_url).then((r) => r.arrayBuffer());
-      await Bun.write(join(SHIGGY_DIR, post.id, "image.png"), image);
-
-      const fileData = {
-        id: post.id,
-        tags: post.tags,
-      };
-
-      await Bun.write(
-        join(SHIGGY_DIR, post.id, "data.json"),
-        JSON.stringify(fileData),
-      );
-
-      success++;
-    } catch (e) {
-      failure++;
-      console.log(`Failed to write ${post.id} to disk`);
-      rmSync(join(SHIGGY_DIR, post.id), { recursive: true });
-    }
-
-    console.log(`${success + failure}/${posts.length}`);
-  }
-
-  console.log(`Successfully wrote ${success} shiggies to disk`);
-  if (failure) console.log(`Failed to write ${failure} shiggies to disk`);
-
-  console.log("Generating whythefuckwouldyoudownloadthis.zip");
+  console.info("Generating whythefuckwouldyoudownloadthis.zip");
 
   const zip = new AdmZip();
 
   zip.addLocalFolder(SHIGGY_DIR);
-  zip.writeZip(join(PUBLIC_DIR, "whythefuckwouldyoudownloadthis.zip"));
-  console.log("Done!");
+  zip.writeZip(join(PUBLIC_DIR, ZIP_NAME));
+  console.info("Done!");
 }

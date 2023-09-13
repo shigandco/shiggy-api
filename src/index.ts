@@ -1,49 +1,29 @@
 import { join } from "path";
-import { PUBLIC_DIR, SHIGGY_DIR } from "./constants";
-import { PathHandler } from "./types/pathHandler";
-import { BunFile } from "bun";
-import { existsSync } from "fs";
-import getShiggies from "./shiggyGetter";
+import server from "bunrest";
 
-if (!existsSync(SHIGGY_DIR))
-  getShiggies(
-    Bun.env.SHIGGY_LIMIT ? Number.parseInt(Bun.env.SHIGGY_LIMIT) : Infinity,
-  );
+import { PUBLIC_DIR } from "./constants";
 
-export async function fetchHandler(req: Request) {
-  const url = new URL(req.url);
+import v1 from "./api/v1";
+import v2 from "./api/v2";
+import v3 from "./api/v3";
 
-  const api = url.pathname.match(/^\/api\/v(\d)\/(.*)$/);
-  if (api) {
-    try {
-      const apiHandler: PathHandler = await import(
-        `./v${api[1]}/index.ts`
-      ).then((m) => m.default);
-
-      if (apiHandler) {
-        let path = api[2];
-        if (path.endsWith("/")) path = path.slice(0, -1);
-        const success = await apiHandler(path, req);
-        if (success) {
-          if ((success as BunFile).exists) {
-            return new Response(success as BunFile);
-          } else {
-            return success as Response;
-          }
-        }
-      }
-    } catch (e) {
-      () => {};
-    }
+const app = server();
+app.use((req, res, next, err) => {
+  if (err) {
+    console.error(err); // atm theres some shit error that throws when no match, idk why
+    return res.status(500).send("Internal Server Error");
   }
+});
 
-  if (url.pathname === "/")
-    return new Response(Bun.file(join(PUBLIC_DIR, "index.html")));
+app.get("/favicon.ico", (_, res) => {
+  res.status(200).send(Bun.file(join(PUBLIC_DIR, "favicon.ico")));
+});
 
-  return new Response(`you literally shouldnt be able to be here`);
-}
+app.use("/api/v1", v1(app.router()));
+app.use("/api/v2", v2(app.router()));
+app.use("/api/v3", v3(app.router()));
 
-Bun.serve({
-  fetch: fetchHandler,
-  port: Bun.env.PORT || 19091,
+const port = Bun.env.PORT || 19091;
+app.listen(port, () => {
+  console.info(`Listening on port ${port}`);
 });

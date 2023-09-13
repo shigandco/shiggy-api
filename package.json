@@ -3,11 +3,13 @@
     "start": "bun run src/index.ts",
     "inspect": "bun --inspect src/index.ts",
     "lint": "eslint .",
-    "run_test": "bun test --preload ./tests/preload.ts"
+    "run_test": "bun test --preload ./tests/preload.ts",
+    "postinstall": "bun run scripts/postinstall.ts"
   },
   "dependencies": {
     "adm-zip": "^0.5.10",
-    "booru": "^2.6.4"
+    "booru": "^2.6.4",
+    "bunrest": "^1.3.0"
   },
   "devDependencies": {
     "@types/adm-zip": "^0.5.1",

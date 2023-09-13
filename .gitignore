@@ -2,3 +2,5 @@ shiggy
 node_modules
 .env
 public/whythefuckwouldyoudownloadthis.zip
+public/shiggies.json
+public/sizes.json
