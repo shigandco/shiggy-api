@@ -1,9 +1,10 @@
 import { APIRoute } from "astro";
-import { readdirSync } from "fs";
 import { PUBLIC_DIR, SHIGGY_DIR } from "../../../constants";
 import { join } from "path";
 
-const allShiggies = readdirSync(SHIGGY_DIR);
+const allShiggies: string[] = await Bun.file(
+  join(SHIGGY_DIR, "shiggies.json"),
+).json();
 
 export const get: APIRoute = ({ params }) => {
   const chosenShiggy = allShiggies[allShiggies.indexOf(params.id!)];
