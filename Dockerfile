@@ -8,6 +8,8 @@ RUN bun install --frozen-lockfile
 
 COPY . .
 
+RUN rm -rf shiggy/*
+
 RUN bun run build
 
 RUN bun run getshiggies
