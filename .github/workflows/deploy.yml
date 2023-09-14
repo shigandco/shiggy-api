@@ -21,7 +21,7 @@ jobs:
 
       - name: Deploy
         run: |
-          ssh -i ~/.ssh/id_rsa $SSH_USER@$SERVER_IP "cd $DEPLOY_PATH && git pull origin main && docker compose -f $COMPOSE_FILE up -d --build --wait converter && docker compose -f $COMPOSE_FILE up -d --build --wait"
+          ssh -i ~/.ssh/id_rsa $SSH_USER@$SERVER_IP "cd $DEPLOY_PATH && git pull origin main && sudo rm -rf $DEPLOY_PATH/../shiggies && docker compose -f $COMPOSE_FILE up -d --build --wait converter && docker compose -f $COMPOSE_FILE up -d --build --wait"
         env:
           SERVER_IP: ${{ secrets.SERVER_IP }}
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
