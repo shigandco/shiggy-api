@@ -1,5 +1,5 @@
-import { get as v1get } from "../src/pages/api/v1/random";
-import { get as v2get } from "../src/pages/api/v2/random";
+import { GET as v1get } from "../src/pages/api/v1/random";
+import { GET as v2get } from "../src/pages/api/v2/random";
 import { get } from "./commons";
 import { test, expect } from "bun:test";
 

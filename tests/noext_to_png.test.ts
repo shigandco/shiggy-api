@@ -1,5 +1,5 @@
 import { test, expect } from "bun:test";
-import { get as v2get } from "../src/pages/api/v2/[id]";
+import { GET as v2get } from "../src/pages/api/v2/[id]";
 import { SHIGGY_DIR } from "../src/constants";
 import { readdirSync } from "fs";
 import { get } from "./commons";
