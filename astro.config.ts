@@ -7,5 +7,8 @@ const config: AstroUserConfig = {
   adapter: nodejs({
     mode: "standalone",
   }),
+  server: {
+    host: "0.0.0.0",
+  },
 };
 export default defineConfig(config);

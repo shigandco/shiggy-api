@@ -3,4 +3,4 @@ services:
     build: .
     env_file: .env
     ports:
-      - "4321:8623"
+      - "8623:4321"
