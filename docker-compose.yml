@@ -1,6 +1,0 @@
-services:
-  shiggy-api:
-    build: .
-    env_file: .env
-    ports:
-      - "8623:4321"
