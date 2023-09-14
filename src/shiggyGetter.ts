@@ -11,6 +11,8 @@ const blacklist = new Set(
 
 const deniedTags = new Set(["nsfw"]); // idk, work on this
 
+const converter = import.meta.env?.CONVERTER || Bun.env.CONVERTER;
+
 function isSafe(post: Post): boolean {
   if (blacklist.has(post.id)) return false;
   switch (post.rating) {
@@ -67,6 +69,8 @@ export default async function getShiggies(limit = 50): Promise<void> {
         if (!post.available || !post.fileUrl || !isSafe(post)) return;
         const fileExt = post.fileUrl.split(".").pop();
 
+        if (fileExt !== "png" && !converter) return;
+
         posts[post.id] = selectAttributesFromPost(post);
 
         const path = join(SHIGGY_DIR, post.id);
@@ -82,13 +86,8 @@ export default async function getShiggies(limit = 50): Promise<void> {
           Bun.write(join(path, "data.json"), JSON.stringify(posts[post.id])),
         ]);
 
-        if (
-          (import.meta.env?.CONVERTER || Bun.env.CONVERTER) &&
-          fileExt !== "png"
-        ) {
-          const url = new URL(
-            `http://${import.meta.env?.CONVERTER || Bun.env.CONVERTER}/`,
-          );
+        if (fileExt !== "png") {
+          const url = new URL(`http://${converter}/`);
           url.searchParams.append("format", "png");
           url.searchParams.append(
             "filepath",
