@@ -10,6 +10,4 @@ COPY . .
 
 RUN bun run build
 
-RUN bun run getshiggies
-
 CMD [ "bun", "run", "start" ]

@@ -86,6 +86,7 @@ export default async function getShiggies(limit = 50): Promise<void> {
           Bun.write(join(path, `image.${fileExt}`), image),
           Bun.write(join(path, "data.json"), JSON.stringify(posts[post.id])),
         ]);
+        console.log(`Fetched ${post.id}!`);
 
         if (fileExt !== "png") {
           try {
