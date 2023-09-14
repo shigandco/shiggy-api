@@ -100,7 +100,7 @@ export default async function getShiggies(limit = 50): Promise<void> {
             if (!res.ok) return;
           } catch (e) {
             console.error(e);
-            await rm(path, { recursive: true });
+            await rm(join(path, post.id), { recursive: true });
           }
         }
 
