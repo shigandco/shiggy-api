@@ -5,8 +5,6 @@ import booru, { Post } from "booru";
 
 import { PUBLIC_DIR, SHIGGY_DIR, ZIP_NAME } from "./constants";
 
-const imageConvPort = Bun.env.IMAGE_CONV_PORT || "19092";
-
 const blacklist = new Set(
   (await Bun.file(join(PUBLIC_DIR, "blacklist.txt")).text()).split("\n"),
 );
@@ -85,7 +83,7 @@ export default async function getShiggies(limit = 50): Promise<void> {
         ]);
 
         if (fileExt !== "png") {
-          const url = new URL(`http://localhost:${imageConvPort}/`);
+          const url = new URL(`http://${import.meta.env.CONVERTER}/`);
           url.searchParams.append("format", "png");
           url.searchParams.append(
             "filepath",

@@ -4,8 +4,6 @@ import { APIRoute } from "astro";
 
 import { SHIGGY_DIR } from "../../../../../constants";
 
-const imageConvPort = Bun.env.IMAGE_CONV_PORT || "19092";
-
 const allShiggies = new Set<string>(
   await Bun.file(join(SHIGGY_DIR, "shiggies.json")).json(),
 );
@@ -35,7 +33,7 @@ export const GET: APIRoute = async ({ params, url }) => {
       const imageName = `image.${format}`;
 
       if (!existsSync(join(SHIGGY_DIR, params.id, imageName))) {
-        const url = new URL(`http://localhost:${imageConvPort}/`);
+        const url = new URL(`http://${import.meta.env.CONVERTER}/`);
         url.searchParams.append("format", format);
         url.searchParams.append(
           "filepath",
