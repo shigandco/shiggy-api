@@ -64,7 +64,13 @@ export default async function getShiggies(limit = 50): Promise<void> {
 
     await Promise.all(
       page.map(async (post) => {
-        if (!post.available || !post.fileUrl || !isSafe(post)) return;
+        if (
+          !post.available ||
+          !post.fileUrl ||
+          !post.fileUrl.endsWith("png") ||
+          !isSafe(post)
+        )
+          return;
 
         posts[post.id] = selectAttributesFromPost(post);
 
