@@ -1,4 +1,4 @@
-import { mkdir, rmSync } from "fs";
+import { existsSync, mkdir, rmSync } from "fs";
 import { join, resolve } from "path";
 import AdmZip from "adm-zip";
 import booru, { Post } from "booru";
@@ -45,6 +45,9 @@ const danbooru = booru("danbooru.donmai.us");
 
 export default async function getShiggies(limit = 50): Promise<void> {
   console.info("Cleaning up old shiggies..");
+
+  if (!existsSync(join(SHIGGY_DIR, "blacklist.json")))
+    Bun.write(Bun.file(join(SHIGGY_DIR, "blacklist.json")), JSON.stringify([]));
 
   rmSync(SHIGGY_DIR, { recursive: true, force: true });
   rmSync(join(PUBLIC_DIR, ZIP_NAME), { force: true });
