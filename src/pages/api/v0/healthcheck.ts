@@ -13,7 +13,7 @@ export const GET: APIRoute = () => {
           : 100,
       );
     }, 1000);
-    return new Response("ok", { status: 200 });
+    return new Response(null, { status: 200 });
   }
-  return new Response("ok", { status: 200 });
+  return new Response(null, { status: 200 });
 };
