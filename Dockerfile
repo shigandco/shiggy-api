@@ -10,4 +10,4 @@ COPY . .
 
 RUN bun run build
 
-CMD [ "bun", "run", "shigstart" ]
+CMD [ "bun", "run", "start" ]

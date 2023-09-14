@@ -10,4 +10,5 @@ jobs:
       - uses: oven-sh/setup-bun@v1
 
       - run: bun install
-      - run: bun run_test
+      - run: bun run getshiggies
+      - run: bun test

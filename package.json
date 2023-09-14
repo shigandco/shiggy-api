@@ -2,10 +2,8 @@
   "scripts": {
     "dev": "bun --bun astro dev",
     "build": "bun --bun astro build",
-    "shigstart": "bun run getshiggies && bun run start",
     "start": "bun dist/server/entry.mjs",
     "lint": "eslint .",
-    "run_test": "bun test --preload ./tests/preload.ts",
     "getshiggies": "bun run scripts/getshiggies.ts"
   },
   "dependencies": {
