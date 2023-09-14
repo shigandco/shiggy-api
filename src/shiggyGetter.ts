@@ -4,6 +4,7 @@ import AdmZip from "adm-zip";
 import booru, { Post } from "booru";
 
 import { PUBLIC_DIR, SHIGGY_DIR, ZIP_NAME } from "./constants";
+import { rm } from "fs/promises";
 
 const blacklist = new Set(
   (await Bun.file(join(PUBLIC_DIR, "blacklist.txt")).text()).split("\n"),
@@ -87,15 +88,20 @@ export default async function getShiggies(limit = 50): Promise<void> {
         ]);
 
         if (fileExt !== "png") {
-          const url = new URL(`http://${converter}/`);
-          url.searchParams.append("format", "png");
-          url.searchParams.append(
-            "filepath",
-            resolve(join(SHIGGY_DIR, post.id, `image.${fileExt}`)),
-          );
+          try {
+            const url = new URL(`http://${converter}/`);
+            url.searchParams.append("format", "png");
+            url.searchParams.append(
+              "filepath",
+              resolve(join(SHIGGY_DIR, post.id, `image.${fileExt}`)),
+            );
 
-          const res = await fetch(url);
-          if (!res.ok) return;
+            const res = await fetch(url);
+            if (!res.ok) return;
+          } catch (e) {
+            console.error(e);
+            await rm(path, { recursive: true });
+          }
         }
 
         didFetch.add(post.id);
