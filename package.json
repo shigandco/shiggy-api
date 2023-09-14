@@ -5,7 +5,7 @@
     "start": "bun dist/server/entry.mjs",
     "lint": "eslint .",
     "run_test": "bun test --preload ./tests/preload.ts",
-    "postinstall": "bun run scripts/postinstall.ts"
+    "getshiggies": "bun run scripts/getshiggies.ts"
   },
   "dependencies": {
     "adm-zip": "^0.5.10",
