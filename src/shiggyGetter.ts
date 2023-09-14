@@ -89,7 +89,7 @@ export default async function getShiggies(limit = 50): Promise<void> {
 
         if (fileExt !== "png") {
           try {
-            const url = new URL(`http://${converter}/`);
+            const url = new URL(converter!);
             url.searchParams.append("format", "png");
             url.searchParams.append(
               "filepath",

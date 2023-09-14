@@ -33,7 +33,7 @@ export const GET: APIRoute = async ({ params, url }) => {
       const imageName = `image.${format}`;
 
       if (!existsSync(join(SHIGGY_DIR, params.id, imageName))) {
-        const url = new URL(`http://${import.meta.env.CONVERTER}/`);
+        const url = new URL(import.meta.env.CONVERTER);
         url.searchParams.append("format", format);
         url.searchParams.append(
           "filepath",
