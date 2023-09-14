@@ -12,4 +12,4 @@ RUN bun run build
 
 RUN bun run getshiggies
 
-ENTRYPOINT [ "bun run start" ]
+CMD [ "bun", "run", "start" ]
