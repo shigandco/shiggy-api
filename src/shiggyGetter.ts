@@ -1,9 +1,11 @@
 import { mkdir, rmSync } from "fs";
-import { join } from "path";
+import { join, resolve } from "path";
 import AdmZip from "adm-zip";
 import booru, { Post } from "booru";
 
 import { PUBLIC_DIR, SHIGGY_DIR, ZIP_NAME } from "./constants";
+
+const imageConvPort = Bun.env.IMAGE_CONV_PORT || "19092";
 
 const blacklist = new Set(
   (await Bun.file(join(PUBLIC_DIR, "blacklist.txt")).text()).split("\n"),
@@ -64,13 +66,8 @@ export default async function getShiggies(limit = 50): Promise<void> {
 
     await Promise.all(
       page.map(async (post) => {
-        if (
-          !post.available ||
-          !post.fileUrl ||
-          !post.fileUrl.endsWith("png") ||
-          !isSafe(post)
-        )
-          return;
+        if (!post.available || !post.fileUrl || !isSafe(post)) return;
+        const fileExt = post.fileUrl.split(".").pop();
 
         posts[post.id] = selectAttributesFromPost(post);
 
@@ -83,9 +80,21 @@ export default async function getShiggies(limit = 50): Promise<void> {
         ]);
 
         await Promise.all([
-          Bun.write(join(path, "image.png"), image),
+          Bun.write(join(path, `image.${fileExt}`), image),
           Bun.write(join(path, "data.json"), JSON.stringify(posts[post.id])),
         ]);
+
+        if (fileExt !== "png") {
+          const url = new URL(`http://localhost:${imageConvPort}/`);
+          url.searchParams.append("format", "png");
+          url.searchParams.append(
+            "filepath",
+            resolve(join(SHIGGY_DIR, post.id, `image.${fileExt}`)),
+          );
+
+          const res = await fetch(url);
+          if (!res.ok) return;
+        }
 
         didFetch.add(post.id);
       }),
