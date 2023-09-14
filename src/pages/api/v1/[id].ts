@@ -15,7 +15,7 @@ export const GET: APIRoute = ({ params }) => {
   } catch (e) {
     return new Response("Not found", { status: 404 });
   }
-  if (n < 0 || n >= allShiggies.length)
+  if (isNaN(n) || n < 0 || n >= allShiggies.length)
     return new Response("Not found", { status: 404 });
 
   const chosenShiggy = allShiggies[n];
