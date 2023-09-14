@@ -6,13 +6,19 @@ const allShiggies: string[] = await Bun.file(
   join(SHIGGY_DIR, "shiggies.json"),
 ).json();
 
-export const get: APIRoute = ({ params }) => {
-  console.log(params);
-  const chosenShiggy = allShiggies[allShiggies.indexOf(params.id!)];
+export const GET: APIRoute = ({ params }) => {
+  if (!params.id) return new Response("Not found", { status: 404 });
 
-  if (!chosenShiggy) {
+  let n;
+  try {
+    n = parseInt(params.id);
+  } catch (e) {
     return new Response("Not found", { status: 404 });
   }
+  if (n < 0 || n >= allShiggies.length)
+    return new Response("Not found", { status: 404 });
+
+  const chosenShiggy = allShiggies[n];
 
   return new Response(Bun.file(join(SHIGGY_DIR, chosenShiggy, "image.png")));
 };

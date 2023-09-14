@@ -1,4 +1,4 @@
-import { mkdir } from "fs";
+import { mkdir, rmSync } from "fs";
 import { join } from "path";
 import AdmZip from "adm-zip";
 import booru, { Post } from "booru";
@@ -41,6 +41,12 @@ function selectAttributesFromPost(post: Post): Partial<Post> {
 const danbooru = booru("danbooru.donmai.us");
 
 export default async function getShiggies(limit = 50): Promise<void> {
+  console.info("Cleaning up old shiggies..");
+
+  rmSync(SHIGGY_DIR, { recursive: true, force: true });
+  rmSync(join(PUBLIC_DIR, ZIP_NAME), { force: true });
+  rmSync(join(PUBLIC_DIR, "sizes.json"), { force: true });
+
   console.info("Setting up shiggies..");
   const posts = {} as Record<
       string,

@@ -7,8 +7,11 @@ const allShiggies: string[] = await Bun.file(
 ).json();
 
 export const GET: APIRoute = () => {
-  const chosenShiggy =
-    allShiggies[Math.floor(Math.random() * allShiggies.length)];
+  const shig = allShiggies[Math.floor(Math.random() * allShiggies.length)];
 
-  return new Response(Bun.file(join(SHIGGY_DIR, chosenShiggy, "image.png")));
+  return new Response(Bun.file(join(SHIGGY_DIR, shig, "image.png")), {
+    headers: {
+      "shiggy-id": shig,
+    },
+  });
 };
