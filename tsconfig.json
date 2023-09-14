@@ -14,7 +14,8 @@
     "allowImportingTsExtensions": true,
     "moduleDetection": "force",
 
-    "jsx": "react-jsx", // support JSX
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
     "allowJs": true, // allow importing `.js` from `.ts`
     "esModuleInterop": true, // allow default imports for CommonJS modules
 
