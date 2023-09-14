@@ -1,0 +1,30 @@
+name: Deploy
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -t rsa $SERVER_IP >> ~/.ssh/known_hosts
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+
+      - name: Deploy
+        run: |
+          ssh -i ~/.ssh/id_rsa $SSH_USER@$SERVER_IP "cd $DEPLOY_PATH && git pull origin main && docker compose -f $COMPOSE_FILE up -d --build --wait"
+        env:
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          COMPOSE_FILE: ${{ secrets.COMPOSE_FILE }}
+          SSH_USER: ${{ secrets.SSH_USER }}
