@@ -82,7 +82,10 @@ export default async function getShiggies(limit = 50): Promise<void> {
           Bun.write(join(path, "data.json"), JSON.stringify(posts[post.id])),
         ]);
 
-        if (fileExt !== "png") {
+        if (
+          (import.meta.env?.CONVERTER || Bun.env.CONVERTER) &&
+          fileExt !== "png"
+        ) {
           const url = new URL(
             `http://${import.meta.env?.CONVERTER || Bun.env.CONVERTER}/`,
           );
