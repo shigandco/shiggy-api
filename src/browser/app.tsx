@@ -25,7 +25,7 @@ export default function App() {
   return (
     <div class="w-screen p-8 min-h-screen">
       <Mason as="div" columns={breakpoints()} items={items()}>
-        {(item, index) => (
+        {(item) => (
           <div class="w-full p-2">
             <div
               class="parent rounded-xl overflow-hidden"
