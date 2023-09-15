@@ -7,7 +7,7 @@ const config: AstroUserConfig = {
   output: "server",
   integrations: [solid(), tailwind()],
   adapter: nodejs({
-    mode: "standalone",
+    mode: "middleware",
   }),
   server: {
     host: "0.0.0.0",

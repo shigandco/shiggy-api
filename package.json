@@ -2,7 +2,7 @@
   "scripts": {
     "dev": "bun --bun astro dev",
     "build": "bun --bun astro build",
-    "start": "bun dist/server/entry.mjs",
+    "start": "bun src/server.ts",
     "lint": "eslint .",
     "getshiggies": "bun run scripts/getshiggies.ts"
   },
@@ -11,6 +11,7 @@
     "adm-zip": "^0.5.10",
     "astro": "^3.0.13",
     "booru": "^2.6.4",
+    "express": "^4.18.2",
     "solid-mason": "^0.1.5",
     "tailwindcss": "^3.0.24"
   },
@@ -18,6 +19,7 @@
     "@astrojs/node": "^6.0.0",
     "@astrojs/solid-js": "^3.0.1",
     "@types/adm-zip": "^0.5.1",
+    "@types/express": "^4.17.17",
     "@types/node": "^20.6.0",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",

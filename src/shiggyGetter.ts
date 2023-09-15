@@ -127,6 +127,8 @@ export default async function getShiggies(limit = 50): Promise<void> {
     await Bun.write(sizesFile, JSON.stringify(sizes));
     await Bun.write(shiggyFile, JSON.stringify(Object.keys(posts)));
 
+    postMessage("UPDATE_SHIGGIES");
+
     page = await page.nextPage();
   }
 

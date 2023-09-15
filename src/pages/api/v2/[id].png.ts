@@ -3,15 +3,11 @@ import { PUBLIC_DIR, SHIGGY_DIR } from "../../../constants";
 import { join } from "path";
 
 import getShiggies from "../../../utils/getShiggies";
-import emitter from "../../../events";
 
-let allShiggies = await getShiggies();
-
-emitter.on("UPDATE_SHIGGIES", async () => {
-  allShiggies = await getShiggies();
-});
-export const GET: APIRoute = ({ params }) => {
+export const GET: APIRoute = async ({ params }) => {
   if (!params.id) return new Response(Bun.file(join(PUBLIC_DIR, "404.png")));
+
+  const allShiggies = await getShiggies();
 
   let n;
   try {

@@ -5,13 +5,6 @@ import { APIRoute } from "astro";
 import { SHIGGY_DIR } from "../../../../../constants";
 
 import getShiggies from "../../../../../utils/getShiggies";
-import emitter from "../../../../../events";
-
-let allShiggies = new Set<string>(await getShiggies());
-
-emitter.on("UPDATE_SHIGGIES", async () => {
-  allShiggies = new Set<string>(await getShiggies());
-});
 
 const allowedOutFormats = new Set([
   "jpeg",
@@ -23,7 +16,7 @@ const allowedOutFormats = new Set([
 ]);
 
 export const GET: APIRoute = async ({ params, url }) => {
-  if (!params.id || !allShiggies.has(params.id))
+  if (!params.id || !new Set<string>(await getShiggies()).has(params.id))
     return new Response("Not found", { status: 404 });
 
   const pngFile = Bun.file(join(SHIGGY_DIR, params.id, "image.png"));
