@@ -2,7 +2,7 @@
   "scripts": {
     "dev": "bun --bun astro dev",
     "build": "bun --bun astro build",
-    "start": "bun src/server.ts",
+    "start": "bun src/server/index.ts",
     "lint": "eslint .",
     "getshiggies": "bun run scripts/getshiggies.ts"
   },
