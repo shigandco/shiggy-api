@@ -10,7 +10,7 @@ test("Extension to png - V2", async () => {
   const randomImage =
     allShiggies[Math.floor(Math.random() * allShiggies.length)];
 
-  const response = get(v2get, { params: { id: randomImage } });
+  const response = await get(v2get, { params: { id: randomImage } });
 
   expect(response.status).toEqual(302);
   expect(response.headers.get("location")).toEndWith(`${randomImage}.png`);
