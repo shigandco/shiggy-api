@@ -42,6 +42,8 @@ export default async function getShiggies(limit = 50): Promise<void> {
   console.info("Cleaning up old shiggies..");
 
   const blacklistFile = Bun.file(join(SHIGGY_DIR, "blacklist.json"));
+  const sizesFile = Bun.file(join(SHIGGY_DIR, "sizes.json"));
+  const shiggyFile = Bun.file(join(SHIGGY_DIR, "shiggies.json"));
 
   const blacklist = new Set<string>(
     (await blacklistFile.exists()) ? await blacklistFile.json() : [],
@@ -49,7 +51,6 @@ export default async function getShiggies(limit = 50): Promise<void> {
 
   await rm(SHIGGY_DIR, { recursive: true, force: true });
   await rm(join(PUBLIC_DIR, ZIP_NAME), { force: true });
-  await rm(join(PUBLIC_DIR, "sizes.json"), { force: true });
 
   await mkdir(SHIGGY_DIR, { recursive: true });
 
@@ -113,24 +114,22 @@ export default async function getShiggies(limit = 50): Promise<void> {
       }),
     );
 
+    const sizes = Object.fromEntries(
+      Object.entries(posts).map(([id, post]) => [
+        id,
+        {
+          width: post.width,
+          height: post.height,
+        },
+      ]),
+    );
+
+    Bun.write(sizesFile, JSON.stringify(sizes));
+    Bun.write(shiggyFile, JSON.stringify(Object.keys(posts)));
+
     page = await page.nextPage();
   }
 
-  const sizes = Object.fromEntries(
-    Object.entries(posts).map(([id, post]) => [
-      id,
-      {
-        width: post.width,
-        height: post.height,
-      },
-    ]),
-  );
-  Bun.write(join(PUBLIC_DIR, "sizes.json"), JSON.stringify(sizes, null));
-
-  Bun.write(
-    join(SHIGGY_DIR, "shiggies.json"),
-    JSON.stringify(Object.keys(posts), null),
-  );
   console.info(
     `Fetched ${didFetch.size} posts out of ${Object.keys(posts).length} total`,
   );
