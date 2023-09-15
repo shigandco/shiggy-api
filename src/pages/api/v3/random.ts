@@ -1,15 +1,9 @@
 import { APIRoute } from "astro";
 
-import { GET as shiggyGetter } from "./shiggies/[id]/index";
-
 import getShiggies from "../../../utils/getShiggies";
 
-export const GET: APIRoute = async (APIContext) => {
-  const allShiggies = await getShiggies();
+export const GET: APIRoute = async ({ redirect }) => {
+  const chosenShiggy = Math.floor(Math.random() * (await getShiggies()).length);
 
-  const shig = allShiggies[Math.floor(Math.random() * allShiggies.length)];
-
-  APIContext.params = { id: shig };
-
-  return shiggyGetter(APIContext);
+  return redirect(`/api/v3/shiggies/${chosenShiggy}`);
 };
