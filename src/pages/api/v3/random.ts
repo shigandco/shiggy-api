@@ -1,13 +1,15 @@
-import { join } from "path";
 import { APIRoute } from "astro";
-
-import { SHIGGY_DIR } from "../../../constants";
 
 import { GET as shiggyGetter } from "./shiggies/[id]/index";
 
-const allShiggies: string[] = await Bun.file(
-  join(SHIGGY_DIR, "shiggies.json"),
-).json();
+import getShiggies from "../../../utils/getShiggies";
+import emitter from "../../../events";
+
+let allShiggies = await getShiggies();
+
+emitter.on("UPDATE_SHIGGIES", async () => {
+  allShiggies = await getShiggies();
+});
 
 export const GET: APIRoute = async (APIContext) => {
   const shig = allShiggies[Math.floor(Math.random() * allShiggies.length)];

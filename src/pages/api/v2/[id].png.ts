@@ -2,10 +2,14 @@ import { APIRoute } from "astro";
 import { PUBLIC_DIR, SHIGGY_DIR } from "../../../constants";
 import { join } from "path";
 
-const allShiggies: string[] = await Bun.file(
-  join(SHIGGY_DIR, "shiggies.json"),
-).json();
+import getShiggies from "../../../utils/getShiggies";
+import emitter from "../../../events";
 
+let allShiggies = await getShiggies();
+
+emitter.on("UPDATE_SHIGGIES", async () => {
+  allShiggies = await getShiggies();
+});
 export const GET: APIRoute = ({ params }) => {
   if (!params.id) return new Response(Bun.file(join(PUBLIC_DIR, "404.png")));
 

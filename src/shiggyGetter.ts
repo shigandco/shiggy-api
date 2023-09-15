@@ -1,20 +1,15 @@
-import { existsSync, mkdir, rmSync } from "fs";
 import { join, resolve } from "path";
 import AdmZip from "adm-zip";
 import booru, { Post } from "booru";
 
 import { PUBLIC_DIR, SHIGGY_DIR, ZIP_NAME } from "./constants";
-import { rm } from "fs/promises";
-
-const blacklist = new Set(
-  (await Bun.file(join(PUBLIC_DIR, "blacklist.txt")).text()).split("\n"),
-);
+import { rm, mkdir } from "fs/promises";
 
 const deniedTags = new Set(["nsfw"]); // idk, work on this
 
 const converter = import.meta.env?.CONVERTER || Bun.env.CONVERTER;
 
-function isSafe(post: Post): boolean {
+function isSafe(post: Post, blacklist: Set<string>): boolean {
   if (blacklist.has(post.id)) return false;
   switch (post.rating) {
     case "s":
@@ -46,12 +41,19 @@ const danbooru = booru("danbooru.donmai.us");
 export default async function getShiggies(limit = 50): Promise<void> {
   console.info("Cleaning up old shiggies..");
 
-  if (!existsSync(join(SHIGGY_DIR, "blacklist.json")))
-    Bun.write(Bun.file(join(SHIGGY_DIR, "blacklist.json")), JSON.stringify([]));
+  const blacklistFile = Bun.file(join(SHIGGY_DIR, "blacklist.json"));
 
-  rmSync(SHIGGY_DIR, { recursive: true, force: true });
-  rmSync(join(PUBLIC_DIR, ZIP_NAME), { force: true });
-  rmSync(join(PUBLIC_DIR, "sizes.json"), { force: true });
+  const blacklist = new Set<string>(
+    (await blacklistFile.exists()) ? await blacklistFile.json() : [],
+  );
+
+  await rm(SHIGGY_DIR, { recursive: true, force: true });
+  await rm(join(PUBLIC_DIR, ZIP_NAME), { force: true });
+  await rm(join(PUBLIC_DIR, "sizes.json"), { force: true });
+
+  await mkdir(SHIGGY_DIR, { recursive: true });
+
+  Bun.write(blacklistFile, JSON.stringify([...blacklist]));
 
   console.info("Setting up shiggies..");
   const posts = {} as Record<
@@ -70,7 +72,8 @@ export default async function getShiggies(limit = 50): Promise<void> {
 
     await Promise.all(
       page.map(async (post) => {
-        if (!post.available || !post.fileUrl || !isSafe(post)) return;
+        if (!post.available || !post.fileUrl || !isSafe(post, blacklist))
+          return;
         const fileExt = post.fileUrl.split(".").pop();
 
         if (fileExt !== "png" && !converter) return;
@@ -80,9 +83,7 @@ export default async function getShiggies(limit = 50): Promise<void> {
         const path = join(SHIGGY_DIR, post.id);
         const [image] = await Promise.all([
           fetch(post.fileUrl!).then((r) => r.arrayBuffer()),
-          mkdir(path, { recursive: true }, (e) => {
-            if (e) throw new Error("Failed to create directory");
-          }),
+          mkdir(path, { recursive: true }),
         ]);
 
         await Promise.all([

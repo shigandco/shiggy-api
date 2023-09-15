@@ -4,9 +4,14 @@ import { APIRoute } from "astro";
 
 import { SHIGGY_DIR } from "../../../../../constants";
 
-const allShiggies = new Set<string>(
-  await Bun.file(join(SHIGGY_DIR, "shiggies.json")).json(),
-);
+import getShiggies from "../../../../../utils/getShiggies";
+import emitter from "../../../../../events";
+
+let allShiggies = new Set<string>(await getShiggies());
+
+emitter.on("UPDATE_SHIGGIES", async () => {
+  allShiggies = new Set<string>(await getShiggies());
+});
 
 const allowedOutFormats = new Set([
   "jpeg",

@@ -1,9 +1,9 @@
 import { APIRoute } from "astro";
-import { SHIGGY_DIR } from "../../../../../constants";
+import { SHIGGY_DIR } from "../../../../constants";
 import { join } from "path";
 
-import getShiggies from "../../../../../utils/getShiggies";
-import emitter from "../../../../../events";
+import getShiggies from "../../../../utils/getShiggies";
+import emitter from "../../../../events";
 
 let allShiggies = new Set<string>(await getShiggies());
 
