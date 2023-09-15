@@ -27,7 +27,7 @@ export const GET: APIRoute = async ({ params, url }) => {
     if (!allowedOutFormats.has(format))
       return new Response("Invalid Format", { status: 400 });
 
-    if (format !== "png") {
+    if (format !== "png" && import.meta.env.CONVERTER) {
       const imageName = `image.${format}`;
 
       if (!existsSync(join(SHIGGY_DIR, params.id, imageName))) {
