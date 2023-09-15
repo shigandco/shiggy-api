@@ -6,7 +6,13 @@ interface ImportMetaEnv {
 
   readonly SHARED_KEY?: string;
 }
-
 interface ImportMeta {
   readonly env: ImportMetaEnv;
+}
+
+/// <reference types="astro/client" />
+declare namespace App {
+  interface Locals {
+    getShiggies: () => void;
+  }
 }
