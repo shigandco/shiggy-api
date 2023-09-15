@@ -1,6 +1,6 @@
 import EventEmitter from "./utils/EventEmitter";
 
-interface Events {
+export interface Events {
   UPDATE_SHIGGIES: [];
 }
 

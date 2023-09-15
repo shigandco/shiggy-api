@@ -4,7 +4,6 @@ import booru, { Post } from "booru";
 
 import { PUBLIC_DIR, SHIGGY_DIR, ZIP_NAME } from "./constants";
 import { rm, mkdir } from "fs/promises";
-import emitter from "./events";
 
 const deniedTags = new Set(["nsfw"]); // idk, work on this
 
@@ -125,10 +124,8 @@ export default async function getShiggies(limit = 50): Promise<void> {
       ]),
     );
 
-    Bun.write(sizesFile, JSON.stringify(sizes));
-    Bun.write(shiggyFile, JSON.stringify(Object.keys(posts)));
-
-    emitter.emit("UPDATE_SHIGGIES");
+    await Bun.write(sizesFile, JSON.stringify(sizes));
+    await Bun.write(shiggyFile, JSON.stringify(Object.keys(posts)));
 
     page = await page.nextPage();
   }

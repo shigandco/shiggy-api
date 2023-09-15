@@ -1,18 +1,20 @@
 import { APIRoute } from "astro";
-import getShiggies from "../../../shiggyGetter";
+import emitter, { Events } from "../../../events";
 
 let gotShiggies = false;
 
 export const GET: APIRoute = () => {
   if (!gotShiggies) {
     gotShiggies = true;
-    setTimeout(() => {
-      getShiggies(
-        import.meta.env.MAX_SHIGGIES
-          ? Number.parseInt(import.meta.env.MAX_SHIGGIES)
-          : 100,
-      );
-    }, 1000);
+
+    const url = new URL("../../../../scripts/getshiggies", import.meta.url);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const worker = new Worker(url);
+
+    worker.onmessage = (event: MessageEvent<keyof Events>) => {
+      emitter.emit(event.data);
+    };
+
     return new Response(null, { status: 200 });
   }
   return new Response(null, { status: 200 });
