@@ -3,7 +3,7 @@ import express from "express";
 
 const app = express();
 
-app.use(express.static("../../dist/client"));
+app.use(express.static("dist/client"));
 
 function getShiggies() {
   const url = new URL("../../scripts/getshiggies", import.meta.url);
