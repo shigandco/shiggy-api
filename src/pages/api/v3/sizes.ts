@@ -1,7 +1,10 @@
 import { APIRoute } from "astro";
-import { SHIGGY_DIR } from "../../../constants";
-import { join } from "path";
+import { getSizes } from "../../../utils/getShiggies.ts";
 
-export const GET: APIRoute = () => {
-  return new Response(Bun.file(join(SHIGGY_DIR, "sizes.json")));
+export const GET: APIRoute = async () => {
+  return new Response(JSON.stringify(await getSizes()), {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 };
