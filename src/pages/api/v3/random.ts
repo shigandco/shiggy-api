@@ -65,7 +65,7 @@ export const GET: APIRoute = async (APIContext) => {
       parsedAspectRatio,
       aspectRatioVariance,
     );
-    if (!Array.isArray(shigsOfRatio)) {
+    if (shigsOfRatio.length === 0) {
       // If no aspect ratio + variance match is found, find the closest aspect ratio we have
       const possibleRatios = Array.from(cachedAspectRatios.keys());
       const [closestRatio] = possibleRatios.sort(
