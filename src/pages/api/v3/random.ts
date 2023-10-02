@@ -22,6 +22,17 @@ async function computeAspectRatios() {
   }
 }
 
+function getShigsByAspectRatio(ratio: number, variance: number): string[] {
+  // Get allowed aspect ratios based on the supplied variance allowance
+  const allowedAspectRatios = Array.from(cachedAspectRatios.entries()).filter(
+    ([r]) => Math.abs(r - ratio) <= variance,
+  );
+  // Join all valid shigs into one array (typescript makes this look weird).
+  return (<string[]>[]).concat(
+    ...allowedAspectRatios.map(([, shigs]) => shigs),
+  );
+}
+
 export const GET: APIRoute = async (APIContext) => {
   const allShiggies = await getShiggies();
 
@@ -32,10 +43,17 @@ export const GET: APIRoute = async (APIContext) => {
     // If no aspect ratio is specified, return any random shiggy
     shig = allShiggies[Math.floor(Math.random() * allShiggies.length)];
   } else {
-    // Check if aspectRatio is a valid number
     const parsedAspectRatio = Number(aspectRatio);
-    if (isNaN(parsedAspectRatio)) {
-      return new Response("aspect-ratio must be a number", { status: 400 });
+    const aspectRatioVariance = Number(
+      APIContext.url.searchParams.get("aspect-ratio-variance") ?? "0",
+    );
+
+    // Make sure that parameters are valid numbers
+    if (isNaN(parsedAspectRatio) || isNaN(aspectRatioVariance)) {
+      return new Response(
+        "aspect-ratio and aspect-ratio-variance must be numbers",
+        { status: 400 },
+      );
     }
 
     // Check if cachedAspectRatios is populated and populate it if not
@@ -43,18 +61,21 @@ export const GET: APIRoute = async (APIContext) => {
       await computeAspectRatios();
     }
 
-    let shigsOfRatio = cachedAspectRatios.get(parsedAspectRatio);
+    let shigsOfRatio = getShigsByAspectRatio(
+      parsedAspectRatio,
+      aspectRatioVariance,
+    );
     if (!Array.isArray(shigsOfRatio)) {
-      // If no exact aspect ratio match is found, find the closest aspect ratio we have
+      // If no aspect ratio + variance match is found, find the closest aspect ratio we have
       const possibleRatios = Array.from(cachedAspectRatios.keys());
       const [closestRatio] = possibleRatios.sort(
         (a, b) =>
           Math.abs(parsedAspectRatio - a) - Math.abs(parsedAspectRatio - b),
       );
-      shigsOfRatio = cachedAspectRatios.get(closestRatio);
+      shigsOfRatio = getShigsByAspectRatio(closestRatio, 0);
     }
 
-    shig = shigsOfRatio![Math.floor(Math.random() * shigsOfRatio!.length)];
+    shig = shigsOfRatio[Math.floor(Math.random() * shigsOfRatio.length)];
   }
 
   APIContext.params = { id: shig };
