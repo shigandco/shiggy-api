@@ -15,7 +15,7 @@ export const GET: APIRoute = async ({ params }) => {
         description: `Shiggy with ID \`${params.id}\` was reported`,
         color: 0xff0000,
         image: {
-          url: `https://shiggy.fun/api/v3/shiggies/${params.id}`,
+          url: `https://api.shig.gy/api/v3/shiggies/${params.id}`,
         },
       },
     ],
