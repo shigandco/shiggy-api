@@ -15,3 +15,7 @@ export const DATA_DIR = _dataDir;
 export const BLACKLIST_FILE = join(DATA_DIR, 'blacklist.json');
 export const SHIGGIES_DIR = join(DATA_DIR, 'shiggies');
 export const TEMP_SHIGGIES_DIR = join(DATA_DIR, 'temp-shiggies');
+
+export const SHIGGIES_ZIP_NAME = 'whatthefuckwhywouldyoudownloadthis.zip';
+
+export const SHIGGIES_ZIP = join(DATA_DIR, SHIGGIES_ZIP_NAME);

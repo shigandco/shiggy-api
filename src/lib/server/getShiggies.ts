@@ -1,9 +1,10 @@
 import booru, { Post } from 'booru';
-import { readFileSync } from 'fs';
+import { createReadStream, createWriteStream, readdirSync, readFileSync, statSync } from 'fs';
 import { mkdir, rename, rm, writeFile } from 'fs/promises';
+import JSZip from 'jszip';
 import { join } from 'path';
 import sharp from 'sharp';
-import { BLACKLIST_FILE, SHIGGIES_DIR, TEMP_SHIGGIES_DIR } from '../constants';
+import { BLACKLIST_FILE, SHIGGIES_DIR, SHIGGIES_ZIP, TEMP_SHIGGIES_DIR } from '../constants';
 
 const blacklistedTags = ['nsfw'];
 
@@ -56,7 +57,33 @@ export default async function getShiggies() {
 			await writeFile(join(TEMP_SHIGGIES_DIR, post.id, 'data.json'), JSON.stringify(post));
 		}
 
-		console.log('Success! Replacing old shiggies');
+		console.log('Success! Making whatthefuckwhywouldyoudownloadthis.zip');
+
+		try {
+			const zip = new JSZip();
+
+			readdirSync(TEMP_SHIGGIES_DIR, { recursive: true }).forEach((path) => {
+				if (Buffer.isBuffer(path)) return;
+				if (path === '0') return;
+				const realPath = join(TEMP_SHIGGIES_DIR, path);
+				if (statSync(realPath).isDirectory()) return;
+				zip.file(path, createReadStream(realPath));
+			});
+
+			await new Promise((res) => {
+				zip
+					?.generateNodeStream({ streamFiles: true })
+					.pipe(createWriteStream(SHIGGIES_ZIP))
+					.on('finish', res);
+			});
+
+			console.log('Done making zip!');
+		} catch (e) {
+			console.error('Error making whatthefuckwhywouldyoudownloadthis.zip');
+			console.error(e);
+		}
+
+		console.log('Replacing old shiggies');
 
 		await rm(SHIGGIES_DIR, { recursive: true, force: true });
 		await rename(TEMP_SHIGGIES_DIR, SHIGGIES_DIR);
