@@ -1,16 +1,13 @@
-FROM oven/bun:1.0.11
+FROM node:21.7.3:alpine
 
-RUN apt-get update && apt-get install -y \
-  curl
+RUN npm i -g pnpm@9.0.1
 
 WORKDIR /app
 
-COPY package.json bun.lockb ./
+COPY package.json pnpm-lock.yaml ./
 
-RUN bun install --frozen-lockfile
+RUN pnpm install --frozen-lockfile
 
 COPY . .
 
-RUN bun run build
-
-CMD [ "bun", "run", "start" ]
+CMD ["pnpm", "start"]
