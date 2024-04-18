@@ -1,4 +1,4 @@
-FROM oven/bun:latest
+FROM oven/bun:1.0.11
 
 RUN apt-get update && apt-get install -y \
   curl
