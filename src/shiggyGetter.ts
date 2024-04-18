@@ -1,9 +1,9 @@
-import { join, resolve } from "path";
 import AdmZip from "adm-zip";
 import booru, { Post } from "booru";
+import { join, resolve } from "path";
 
+import { mkdir, rm } from "fs/promises";
 import { PUBLIC_DIR, SHIGGY_DIR, ZIP_NAME } from "./constants";
-import { rm, mkdir } from "fs/promises";
 
 const deniedTags = new Set(["nsfw"]); // idk, work on this
 
@@ -73,44 +73,49 @@ export default async function getShiggies(limit = 50): Promise<void> {
 
     await Promise.all(
       page.map(async (post) => {
-        if (!post.available || !post.fileUrl || !isSafe(post, blacklist))
-          return;
-        const fileExt = post.fileUrl.split(".").pop();
+        try {
+          if (!post.available || !post.fileUrl || !isSafe(post, blacklist))
+            return;
+          const fileExt = post.fileUrl.split(".").pop();
 
-        if (fileExt !== "png" && !converter) return;
+          if (fileExt !== "png" && !converter) return;
 
-        posts[post.id] = selectAttributesFromPost(post);
+          posts[post.id] = selectAttributesFromPost(post);
 
-        const path = join(SHIGGY_DIR, post.id);
-        const [image] = await Promise.all([
-          fetch(post.fileUrl!).then((r) => r.arrayBuffer()),
-          mkdir(path, { recursive: true }),
-        ]);
+          const path = join(SHIGGY_DIR, post.id);
+          const [image] = await Promise.all([
+            fetch(post.fileUrl!).then((r) => r.arrayBuffer()),
+            mkdir(path, { recursive: true }),
+          ]);
 
-        await Promise.all([
-          Bun.write(join(path, `image.${fileExt}`), image),
-          Bun.write(join(path, "data.json"), JSON.stringify(posts[post.id])),
-        ]);
-        console.log(`Fetched ${post.id}!`);
+          await Promise.all([
+            Bun.write(join(path, `image.${fileExt}`), image),
+            Bun.write(join(path, "data.json"), JSON.stringify(posts[post.id])),
+          ]);
+          console.log(`Fetched ${post.id}!`);
 
-        if (fileExt !== "png") {
-          try {
-            const url = new URL(converter!);
-            url.searchParams.append("format", "png");
-            url.searchParams.append(
-              "filepath",
-              resolve(join(SHIGGY_DIR, post.id, `image.${fileExt}`)),
-            );
+          if (fileExt !== "png") {
+            try {
+              const url = new URL(converter!);
+              url.searchParams.append("format", "png");
+              url.searchParams.append(
+                "filepath",
+                resolve(join(SHIGGY_DIR, post.id, `image.${fileExt}`)),
+              );
 
-            const res = await fetch(url);
-            if (!res.ok) return;
-          } catch (e) {
-            console.error(e);
-            await rm(join(SHIGGY_DIR, post.id), { recursive: true });
+              const res = await fetch(url);
+              if (!res.ok) return;
+            } catch (e) {
+              console.error(e);
+              await rm(join(SHIGGY_DIR, post.id), { recursive: true });
+            }
           }
-        }
 
-        didFetch.add(post.id);
+          didFetch.add(post.id);
+        } catch (e) {
+          console.error(`Failed to fetch ${post.id}`);
+          console.error(e);
+        }
       }),
     );
 
