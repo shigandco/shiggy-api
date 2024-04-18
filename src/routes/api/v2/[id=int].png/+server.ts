@@ -11,8 +11,7 @@ export const GET: RequestHandler = async ({ params }) => {
 
 	return file(getImagePath(post.id), {
 		headers: {
-			'Content-Type': 'image/png',
-			'Shiggy-Id': post.id
+			'Content-Type': 'image/png'
 		}
 	});
 };

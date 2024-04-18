@@ -36,6 +36,7 @@
 	"type": "module",
 	"dependencies": {
 		"booru": "^2.6.4",
+		"discord.js": "^14.14.1",
 		"jszip": "^3.10.1",
 		"sharp": "^0.33.3"
 	}

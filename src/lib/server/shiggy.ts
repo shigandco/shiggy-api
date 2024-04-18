@@ -20,3 +20,14 @@ export function random(): Post | null {
 	const file = files[Math.floor(Math.random() * files.length)];
 	return get(file);
 }
+
+export function getAll(): Post[] {
+	const posts: Post[] = [];
+
+	for (const file of readdirSync(SHIGGIES_DIR)) {
+		const post = get(file);
+		if (post) posts.push(post);
+	}
+
+	return posts;
+}
