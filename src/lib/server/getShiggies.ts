@@ -1,6 +1,13 @@
 import booru, { Post } from 'booru';
 import { config as dotenv } from 'dotenv';
-import { createReadStream, createWriteStream, readdirSync, readFileSync, statSync } from 'fs';
+import {
+	createReadStream,
+	createWriteStream,
+	existsSync,
+	readdirSync,
+	readFileSync,
+	statSync
+} from 'fs';
 import { mkdir, rename, rm, writeFile } from 'fs/promises';
 import JSZip from 'jszip';
 import { join } from 'path';
@@ -9,6 +16,29 @@ import { BLACKLIST_FILE, SHIGGIES_DIR, SHIGGIES_ZIP, TEMP_SHIGGIES_DIR } from '.
 dotenv();
 
 const blacklistedTags = ['nsfw'];
+
+export async function makeZip() {
+	if (existsSync(SHIGGIES_ZIP)) await rm(SHIGGIES_ZIP, { force: true });
+
+	const zip = new JSZip();
+
+	readdirSync(SHIGGIES_DIR, { recursive: true }).forEach((path) => {
+		if (Buffer.isBuffer(path)) return;
+		if (path === '0') return;
+		const realPath = join(SHIGGIES_DIR, path);
+		if (statSync(realPath).isDirectory()) return;
+		zip.file(path, createReadStream(realPath));
+	});
+
+	await new Promise((res) => {
+		zip
+			?.generateNodeStream({ streamFiles: true })
+			.pipe(createWriteStream(SHIGGIES_ZIP))
+			.on('finish', res);
+	});
+
+	console.log('Done making zip!');
+}
 
 export default async function getShiggies() {
 	try {
@@ -59,36 +89,19 @@ export default async function getShiggies() {
 			await writeFile(join(TEMP_SHIGGIES_DIR, post.id, 'data.json'), JSON.stringify(post));
 		}
 
-		console.log('Success! Making whatthefuckwhywouldyoudownloadthis.zip');
-
-		try {
-			const zip = new JSZip();
-
-			readdirSync(TEMP_SHIGGIES_DIR, { recursive: true }).forEach((path) => {
-				if (Buffer.isBuffer(path)) return;
-				if (path === '0') return;
-				const realPath = join(TEMP_SHIGGIES_DIR, path);
-				if (statSync(realPath).isDirectory()) return;
-				zip.file(path, createReadStream(realPath));
-			});
-
-			await new Promise((res) => {
-				zip
-					?.generateNodeStream({ streamFiles: true })
-					.pipe(createWriteStream(SHIGGIES_ZIP))
-					.on('finish', res);
-			});
-
-			console.log('Done making zip!');
-		} catch (e) {
-			console.error('Error making whatthefuckwhywouldyoudownloadthis.zip');
-			console.error(e);
-		}
-
 		console.log('Replacing old shiggies');
 
 		await rm(SHIGGIES_DIR, { recursive: true, force: true });
 		await rename(TEMP_SHIGGIES_DIR, SHIGGIES_DIR);
+
+		console.log('Success! Making whatthefuckwhywouldyoudownloadthis.zip');
+
+		try {
+			makeZip();
+		} catch (e) {
+			console.error('Error making whatthefuckwhywouldyoudownloadthis.zip');
+			console.error(e);
+		}
 	} catch (e) {
 		console.log('Error getting shiggies');
 		console.error(e);
