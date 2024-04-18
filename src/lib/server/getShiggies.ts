@@ -1,10 +1,12 @@
 import booru, { Post } from 'booru';
+import { config as dotenv } from 'dotenv';
 import { createReadStream, createWriteStream, readdirSync, readFileSync, statSync } from 'fs';
 import { mkdir, rename, rm, writeFile } from 'fs/promises';
 import JSZip from 'jszip';
 import { join } from 'path';
 import sharp from 'sharp';
 import { BLACKLIST_FILE, SHIGGIES_DIR, SHIGGIES_ZIP, TEMP_SHIGGIES_DIR } from '../constants';
+dotenv();
 
 const blacklistedTags = ['nsfw'];
 
