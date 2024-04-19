@@ -10,6 +10,12 @@
 	};
 </script>
 
+<meta content="{shiggy.id}" property="og:title" />
+<meta content="shiggy" property="og:description" />
+<meta content="/{shiggy.id}" property="og:url" />
+<meta content="/api/v3/shiggies/${shiggy.id}" property="og:image" />
+<meta content="#d9d8de" data-react-helmet="true" name="theme-color" />
+
 <div class="root flex flex-row">
 	<div class="image">
 		<img src={`/api/v3/shiggies/${shiggy.id}`} alt={shiggy.id} />
