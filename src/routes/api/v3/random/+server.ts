@@ -17,11 +17,16 @@ export const GET: RequestHandler = async ({ request }) => {
 			.map(Number);
 
 		if (!url.searchParams.get('aspect-ratio-variance')) {
+			const matches: Post[] = [];
+
 			for (const tryPost of posts) {
 				if (tryPost.width / tryPost.height === targetWidth / targetHeight) {
-					post = tryPost;
-					break;
+					matches.push(tryPost);
 				}
+			}
+
+			if (matches.length > 0) {
+				post = matches[Math.floor(Math.random() * matches.length)];
 			}
 		} else {
 			// Target the closest aspect ratio

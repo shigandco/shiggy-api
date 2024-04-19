@@ -23,6 +23,9 @@ importers:
       sharp:
         specifier: ^0.33.3
         version: 0.33.3
+      svelte-masonry:
+        specifier: ^0.1.1
+        version: 0.1.1(svelte@5.0.0-next.108)
     devDependencies:
       '@sveltejs/adapter-auto':
         specifier: ^3.0.0
@@ -1599,6 +1602,11 @@ packages:
     engines: {node: ^12.20 || ^14.13.1 || >= 16}
     peerDependencies:
       svelte: ^3.19.0 || ^4.0.0
+
+  svelte-masonry@0.1.1:
+    resolution: {integrity: sha512-OsJ9n5kAVVlRxkXNZKGsyPCgaWVOM1REUzBx+pHzkWcanmctCnkrOdeoExZ/Vz4k+CeuZRQ5QkBmpB/XfQlCuA==}
+    peerDependencies:
+      svelte: ^4.0.0
 
   svelte-preprocess@5.1.4:
     resolution: {integrity: sha512-IvnbQ6D6Ao3Gg6ftiM5tdbR6aAETwjhHV+UKGf5bHGYR69RQvF1ho0JKPcbUON4vy4R7zom13jPjgdOWCQ5hDA==}
@@ -3230,6 +3238,10 @@ snapshots:
       svelte: 5.0.0-next.108
 
   svelte-hmr@0.16.0(svelte@5.0.0-next.108):
+    dependencies:
+      svelte: 5.0.0-next.108
+
+  svelte-masonry@0.1.1(svelte@5.0.0-next.108):
     dependencies:
       svelte: 5.0.0-next.108
 

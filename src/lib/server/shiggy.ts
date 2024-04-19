@@ -22,15 +22,34 @@ export function random(): Post | null {
 	return get(file);
 }
 
+export function getAllIds(): string[] {
+	return readdirSync(SHIGGIES_DIR);
+}
+
 export function getAll(): Post[] {
 	const posts: Post[] = [];
 
-	for (const file of readdirSync(SHIGGIES_DIR)) {
+	for (const file of getAllIds()) {
 		const post = get(file);
 		if (post) posts.push(post);
 	}
 
 	return posts;
+}
+type sizes = {
+	[key: string]: {
+		width: number;
+		height: number;
+	};
+};
+export function getSizes(): sizes {
+	return getAll().reduce((acc: sizes, i) => {
+		acc[i.id] = {
+			width: i.width,
+			height: i.height
+		};
+		return acc;
+	}, {});
 }
 
 export async function blacklist(id: string) {

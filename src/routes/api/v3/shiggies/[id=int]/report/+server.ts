@@ -4,7 +4,7 @@ import { getBaseUrl } from '$lib/util';
 import { error, text, type RequestHandler } from '@sveltejs/kit';
 import { EmbedBuilder, WebhookClient } from 'discord.js';
 
-export const GET: RequestHandler = async ({ params, request }) => {
+export const POST: RequestHandler = async ({ params, request }) => {
 	const post = get(params.id ?? '0');
 
 	if (post === null) {
