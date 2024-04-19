@@ -23,9 +23,6 @@ importers:
       sharp:
         specifier: ^0.33.3
         version: 0.33.3
-      svelte-masonry:
-        specifier: ^0.1.1
-        version: 0.1.1(svelte@5.0.0-next.108)
     devDependencies:
       '@sveltejs/adapter-auto':
         specifier: ^3.0.0
@@ -39,9 +36,6 @@ importers:
       '@sveltejs/vite-plugin-svelte':
         specifier: ^3.0.0
         version: 3.1.0(svelte@5.0.0-next.108)(vite@5.2.9(@types/node@20.12.7))
-      '@types/dotenv':
-        specifier: ^8.2.0
-        version: 8.2.0
       '@types/eslint':
         specifier: ^8.56.0
         version: 8.56.9
@@ -622,10 +616,6 @@ packages:
 
   '@types/cookie@0.6.0':
     resolution: {integrity: sha512-4Kh9a6B2bQciAhf7FSuMRRkUWecJgJu9nPnx3yzpsfXX/c50REIqpHY4C82bXP90qrLtXtkDxTZosYO3UpOwlA==}
-
-  '@types/dotenv@8.2.0':
-    resolution: {integrity: sha512-ylSC9GhfRH7m1EUXBXofhgx4lUWmFeQDINW5oLuS+gxWdfUeW4zJdeVTYVkexEW+e2VUvlZR2kGnGGipAWR7kw==}
-    deprecated: This is a stub types definition. dotenv provides its own type definitions, so you do not need this installed.
 
   '@types/eslint@8.56.9':
     resolution: {integrity: sha512-W4W3KcqzjJ0sHg2vAq9vfml6OhsJ53TcUjUqfzzZf/EChUtwspszj/S0pzMxnfRcO55/iGq47dscXw71Fxc4Zg==}
@@ -1603,11 +1593,6 @@ packages:
     peerDependencies:
       svelte: ^3.19.0 || ^4.0.0
 
-  svelte-masonry@0.1.1:
-    resolution: {integrity: sha512-OsJ9n5kAVVlRxkXNZKGsyPCgaWVOM1REUzBx+pHzkWcanmctCnkrOdeoExZ/Vz4k+CeuZRQ5QkBmpB/XfQlCuA==}
-    peerDependencies:
-      svelte: ^4.0.0
-
   svelte-preprocess@5.1.4:
     resolution: {integrity: sha512-IvnbQ6D6Ao3Gg6ftiM5tdbR6aAETwjhHV+UKGf5bHGYR69RQvF1ho0JKPcbUON4vy4R7zom13jPjgdOWCQ5hDA==}
     engines: {node: '>= 16.0.0'}
@@ -2207,10 +2192,6 @@ snapshots:
       - supports-color
 
   '@types/cookie@0.6.0': {}
-
-  '@types/dotenv@8.2.0':
-    dependencies:
-      dotenv: 16.4.5
 
   '@types/eslint@8.56.9':
     dependencies:
@@ -3238,10 +3219,6 @@ snapshots:
       svelte: 5.0.0-next.108
 
   svelte-hmr@0.16.0(svelte@5.0.0-next.108):
-    dependencies:
-      svelte: 5.0.0-next.108
-
-  svelte-masonry@0.1.1(svelte@5.0.0-next.108):
     dependencies:
       svelte: 5.0.0-next.108
 
