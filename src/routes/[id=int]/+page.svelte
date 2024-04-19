@@ -10,12 +10,14 @@
 	};
 </script>
 
-<meta content="{shiggy.id}" property="og:title" />
-<meta content="shiggy" property="og:description" />
-<meta content="/{shiggy.id}" property="og:url" />
-<meta content="https://shiggy.fun/api/v3/shiggies/{shiggy.id}" property="og:image" />
-<meta name="twitter:card" content="summary_large_image">
-<meta content="#d9d8de" data-react-helmet="true" name="theme-color" />
+<svelte:head>
+	<meta content={shiggy.id} property="og:title" />
+	<meta content="shiggy" property="og:description" />
+	<meta content="/{shiggy.id}" property="og:url" />
+	<meta content="https://shiggy.fun/api/v3/shiggies/{shiggy.id}" property="og:image" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta content="#d9d8de" data-react-helmet="true" name="theme-color" />
+</svelte:head>
 
 <div class="root flex flex-row">
 	<div class="image">
