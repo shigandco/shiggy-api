@@ -1,5 +1,6 @@
 FROM node:21.7.3-alpine
 
+RUN apk add --no-cache curl
 RUN npm i -g pnpm@9.0.1
 
 WORKDIR /app
